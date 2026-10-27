@@ -23,41 +23,45 @@ D1 copy still exists on the ChatGPT Sites hosting, untouched.
 
 ## Still to do
 
-- The emails can still contain a link as well; it opens
-  `https://morningfy-jonathan.auroraolive2048.chatgpt.site/email`. When the website moves to
-  new hosting, change `LINK_REDIRECT` in `app/email-app.tsx` and add the new address in
-  Supabase → Authentication → URL Configuration.
+- Email links return to the page you used (the iPhone app uses `WEB_APP_URL` in
+  `app/email-app.tsx`). Every address must be allowed in Supabase (see below).
 - Supabase's default email sender is rate-limited; set up custom SMTP before inviting others.
 - The Supabase advisor reports leaked-password protection is off (unchanged).
 
-## Required once: put the code in Supabase's emails
+## Required once: Supabase dashboard settings
 
-Supabase's default emails only contain a link. In the Supabase dashboard open
-**Authentication → Emails → Templates** and replace the **Message body** of these three templates
-(keep the subjects or change them as you like):
+**1. Authentication → URL Configuration**
+- **Site URL:** `https://jonttuzhang.github.io/Morningfy/`
+- **Redirect URLs:** add `https://jonttuzhang.github.io/Morningfy/`
 
-**Confirm signup**
-```html
-<h2>Welcome to Morningfy</h2>
-<p>Your verification code is:</p>
-<p style="font-size:28px;letter-spacing:6px"><strong>{{ .Token }}</strong></p>
-<p>Enter it in Morningfy to verify your email. If you didn't sign up, ignore this email.</p>
-```
+Without this, email links fall back to the old ChatGPT site.
+
+**2. Authentication → Emails → Templates.** Supabase's default emails only contain a link.
+Replace the **Message body** of these three templates so they include the 6-digit code
+(`{{ .Token }}`) and keep the link as a backup:
 
 **Magic Link** (used by "Sign in with a code")
 ```html
 <h2>Your Morningfy sign-in code</h2>
 <p style="font-size:28px;letter-spacing:6px"><strong>{{ .Token }}</strong></p>
-<p>Enter it in Morningfy to sign in. If you didn't ask for it, ignore this email.</p>
+<p>Enter this code in Morningfy, or <a href="{{ .ConfirmationURL }}">sign in with this link</a>.</p>
+<p>If you didn't ask for it, ignore this email.</p>
+```
+
+**Confirm signup**
+```html
+<h2>Welcome to Morningfy</h2>
+<p style="font-size:28px;letter-spacing:6px"><strong>{{ .Token }}</strong></p>
+<p>Enter this code in Morningfy to verify your email, or <a href="{{ .ConfirmationURL }}">verify with this link</a>.</p>
+<p>If you didn't sign up, ignore this email.</p>
 ```
 
 **Reset Password**
 ```html
 <h2>Reset your Morningfy password</h2>
-<p>Your reset code is:</p>
 <p style="font-size:28px;letter-spacing:6px"><strong>{{ .Token }}</strong></p>
-<p>Enter it in Morningfy, then choose a new password. If you didn't ask for this, ignore this email.</p>
+<p>Enter this code in Morningfy, then choose a new password. Or <a href="{{ .ConfirmationURL }}">reset with this link</a>.</p>
+<p>If you didn't ask for this, ignore this email.</p>
 ```
 
-Also check **Authentication → Sign In / Providers → Email**: "Confirm email" on, and the email
-OTP length is 6 digits (the app accepts 6–10).
+**3. Authentication → Sign In / Providers → Email:** "Confirm email" on; email OTP length 6.

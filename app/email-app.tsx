@@ -5,13 +5,16 @@ import {Sunrise} from 'lucide-react';
 import Morningfy from './morningfy';
 import {getSupabase} from '../lib/supabase-client';
 import {emailStateRequest} from '../lib/email-state';
+import {isNative} from '../lib/platform';
 
 // login: email + password · code: request a sign-in code · verify: enter a 6-digit code
 // signup: create account (verified by code) · reset: request a reset code · recovery: choose new password
 type Mode='login'|'code'|'verify'|'signup'|'reset'|'recovery';
 type CodeFor=Extract<EmailOtpType,'email'|'signup'|'recovery'>;
-// Links in account emails still open the website; the 6-digit code in the same email works in the app.
-const LINK_REDIRECT='https://morningfy-jonathan.auroraolive2048.chatgpt.site/email';
+// Links in account emails come back to the page you are using; the iPhone app sends them to the website.
+// Each address must be listed under Supabase → Authentication → URL Configuration → Redirect URLs.
+const WEB_APP_URL='https://jonttuzhang.github.io/Morningfy/';
+const linkRedirect=()=>isNative()?WEB_APP_URL:window.location.origin+window.location.pathname;
 export default function EmailApp(){
  const [session,setSession]=useState<Session|null>(null),[ready,setReady]=useState(false),[mode,setMode]=useState<Mode>('login'),[codeFor,setCodeFor]=useState<CodeFor>('email'),[recovering,setRecovering]=useState(false);
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[code,setCode]=useState(''),[message,setMessage]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[fi,setFi]=useState(false),[version]=useState(0);
@@ -26,9 +29,9 @@ export default function EmailApp(){
  // Ask Supabase to email a code for the given purpose.
  async function sendCode(kind:CodeFor){
   const client=getSupabase(),address=email.trim();
-  const {error}=kind==='signup'?await client.auth.resend({type:'signup',email:address,options:{emailRedirectTo:LINK_REDIRECT}})
-   :kind==='recovery'?await client.auth.resetPasswordForEmail(address,{redirectTo:LINK_REDIRECT})
-   :await client.auth.signInWithOtp({email:address,options:{shouldCreateUser:false}});
+  const {error}=kind==='signup'?await client.auth.resend({type:'signup',email:address,options:{emailRedirectTo:linkRedirect()}})
+   :kind==='recovery'?await client.auth.resetPasswordForEmail(address,{redirectTo:linkRedirect()})
+   :await client.auth.signInWithOtp({email:address,options:{shouldCreateUser:false,emailRedirectTo:linkRedirect()}});
   if(error)throw error;
  }
  function awaitCode(kind:CodeFor){setCodeFor(kind);setCode('');setMode('verify');setMessage(t(`We sent a code to ${email.trim()}. It may take a minute to arrive.`,`Lähetimme koodin osoitteeseen ${email.trim()}. Sen saapuminen voi kestää hetken.`))}
@@ -51,7 +54,7 @@ export default function EmailApp(){
    }else if(mode==='code'){
     await sendCode('email');awaitCode('email');
    }else if(mode==='signup'){
-    const {data,error}=await client.auth.signUp({email:address,password,options:{emailRedirectTo:LINK_REDIRECT}});if(error)throw error;
+    const {data,error}=await client.auth.signUp({email:address,password,options:{emailRedirectTo:linkRedirect()}});if(error)throw error;
     if(data.user&&data.user.identities?.length===0)throw new Error(t('An account with this email already exists. Sign in instead.','Tällä sähköpostilla on jo tili. Kirjaudu sisään.'));
     if(!data.session)awaitCode('signup');
    }else if(mode==='reset'){
