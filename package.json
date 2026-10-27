@@ -1,0 +1,8 @@
+{
+ "name":"morningfy-claude-handoff",
+ "version":"0.1.0",
+ "private":true,
+ "type":"module",
+ "description":"Standalone Morningfy reconstruction for development in Claude Code",
+ "scripts": {"start":"python -m http.server 4173", "test":"node --test tests/*.test.mjs"}
+}
