@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const code=ts.transpileModule(readFileSync(new URL('../lib/tracking.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext}}).outputText;
+const {day,elapsed,streakFor}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+assert.equal(elapsed({elapsed:30,start:1000},61000),90,'timestamp continues despite suspended intervals');
+assert.equal(elapsed({elapsed:30,start:null},61000),30,'pause excludes elapsed wall time');
+assert.equal(elapsed({elapsed:0,start:1000},0),0,'clock rollback cannot create negative time');
+assert.equal(streakFor({'2026-10-25':2700,'2026-10-24':3600},{'2026-10-25':45,'2026-10-24':60},45,new Date(2026,9,26,10)),2,'unfinished today preserves yesterday streak');
+assert.equal(streakFor({'2026-10-26':2700,'2026-10-25':2700},{},45,new Date(2026,9,26,10)),2,'meeting goal extends streak');
+assert.equal(streakFor({'2026-10-26':2699},{},45,new Date(2026,9,26,10)),0,'below goal does not count');
+assert.equal(day(new Date(2026,0,1,0,1)),'2026-01-01','day uses local calendar');
+console.log('7 tracking checks passed');
