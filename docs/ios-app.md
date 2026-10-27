@@ -12,10 +12,14 @@ Windows can edit and build the web bundle. Xcode compilation and signing require
 
 ## Account links
 
-Confirmation and password-reset emails open the live /email website. Complete them in the browser, then return to the app and sign in. Custom deep links are not configured. Import old history on the website only; the imported data is then available in the app.
+Confirmation and password-reset emails open the /email page of the website. Complete them in the browser, then return to the app and sign in. Custom deep links are not configured.
 
 ## Verification limits
 
 TypeScript, the mobile bundle, Capacitor iOS generation and asset syncing have been checked on Linux. Xcode compilation, signing, device timers, keyboard and safe areas, external navigation and two-device syncing still require Apple tooling and device testing. No signed IPA or TestFlight upload exists yet.
 
-Only a publishable Supabase key is bundled. RLS restricts data to auth.uid(), with no anonymous table/RPC access. The legacy API still checks ChatGPT identity. No journal data is included in the binary.
+Only a publishable Supabase key is bundled. RLS restricts data to auth.uid(), with no anonymous table/RPC access. No journal data is included in the binary.
+
+## App icon and launch screen
+
+The icon (`ios/App/App/Assets.xcassets/AppIcon.appiconset`) is a full-bleed 1024×1024 image; iOS rounds the corners itself. The launch screen (`Splash.imageset`) is the app's cream background with the Morningfy sunrise.
