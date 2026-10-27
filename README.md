@@ -40,7 +40,9 @@ node --test tests/*.test.mjs
 - Local JSON export and import, keyboard-aware controls, responsive layout, app manifest and offline cache.
 - Basic PWA icons, so an HTTPS-deployed site can be added to the iPhone Home Screen.
 
-**Not yet included:** a real email login, existing user history synchronization, production deployment, or the exact original source/UI. This handoff intentionally does not implement the original Supabase authentication or write to its database. The live database schema is documented in `docs/PRODUCTION_SCHEMA.md` to help Claude migrate cautiously.
+**Account sync (added in Claude Code):** sign in with your Morningfy email and password to load your existing Supabase data. It starts in a read-only check mode, so nothing is written until you switch it on. See `docs/SUPABASE_SYNC.md`.
+
+**Not yet included:** production deployment, choosing between routine presets (Essential/Everyday/Extended), or the exact original source/UI. The live database schema is documented in `docs/PRODUCTION_SCHEMA.md`.
 
 ## Where to edit
 
@@ -51,12 +53,15 @@ node --test tests/*.test.mjs
 | `src/main.js` | The app screens, buttons, study timer, journal, data controls |
 | `src/store.js` | Data model, local persistence, calculations |
 | `src/i18n.js` | Finnish/English text |
+| `src/sync.js`, `src/config.js` | Sign-in and safe Supabase sync (`SYNC_WRITES` switch) |
+| `vendor/` | Pinned copy of the official Supabase browser library (MIT) |
 | `assets/` | Original Morningfy-style sunrise icons |
 | `manifest.webmanifest` | iPhone/Android install metadata |
 | `service-worker.js` | Offline caching of the static app |
 | `docs/CLAUDE_HANDOFF.md` | Detailed coding-agent instructions |
 | `docs/PRODUCTION_SCHEMA.md` | Read-only metadata from the existing Supabase project |
-| `tests/store.test.mjs` | Data model smoke tests |
+| `docs/SUPABASE_SYNC.md` | How account sync protects your data, and how to turn on saving |
+| `tests/` | Data model tests, including production-format compatibility |
 
 ## Safe approach to resuming the original app
 
