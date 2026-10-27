@@ -65,3 +65,4 @@
 .email-auth small{font-weight:400;color:var(--muted)}
 .email-auth-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin-top:22px;font-size:12px}
 @media(max-width:480px){.email-auth-card{padding:25px}.email-auth-top .brand{font-size:23px}}
+.email-auth .code-input{font-size:24px;letter-spacing:8px;text-align:center;font-variant-numeric:tabular-nums}
