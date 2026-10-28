@@ -40,6 +40,7 @@ export default function EmailApp(){
   if(/signups not allowed for otp|user not found/i.test(m))return t('No account uses this email. Create an account first.','Tällä sähköpostilla ei ole tiliä. Luo ensin tili.');
   if(/token has expired|invalid/i.test(m)&&mode==='verify')return t('That code is wrong or has expired. Check the newest email or send a new code.','Koodi on väärä tai vanhentunut. Tarkista uusin viesti tai lähetä uusi koodi.');
   if(/invalid login credentials/i.test(m))return t('Email or password is incorrect.','Sähköposti tai salasana on väärin.');
+  if(/error sending/i.test(m))return t('The email could not be sent right now. Please try again in a moment.','Sähköpostia ei voitu lähettää juuri nyt. Yritä hetken päästä uudelleen.');
   if(/rate limit|for security purposes/i.test(m))return t('Please wait a minute before asking for another email.','Odota hetki ennen kuin pyydät uuden viestin.');
   return m||t('Please try again.','Yritä uudelleen.');
  }
