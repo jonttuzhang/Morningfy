@@ -25,7 +25,7 @@ D1 copy still exists on the ChatGPT Sites hosting, untouched.
 
 - Email links return to the page you used (the iPhone app uses `WEB_APP_URL` in
   `app/email-app.tsx`). Every address must be allowed in Supabase (see below).
-- Supabase's default email sender is rate-limited; set up custom SMTP before inviting others.
+- Supabase allows one code email per minute per address.
 - The Supabase advisor reports leaked-password protection is off (unchanged).
 
 ## Required once: Supabase dashboard settings
@@ -36,7 +36,14 @@ D1 copy still exists on the ChatGPT Sites hosting, untouched.
 
 Without this, email links fall back to the old ChatGPT site.
 
-**2. Authentication → Emails → Templates.** Supabase's default emails only contain a link.
+**2. Authentication → Emails → SMTP Settings.** Supabase only lets you edit templates when emails go
+through your own mail server. Morningfy uses Gmail (set up 2026-10-28):
+host `smtp.gmail.com`, port `465`, username and sender `jonttu.zhang@gmail.com`, password = a Gmail
+**app password** (myaccount.google.com/apppasswords; needs 2-Step Verification). If emails stop
+arriving, check Authentication → Logs; "535 Username and Password not accepted" means the app
+password must be recreated. Never commit the app password.
+
+**3. Authentication → Emails → Templates.** Supabase's default emails only contain a link.
 Replace the **Message body** of these three templates so they include the 6-digit code
 (`{{ .Token }}`) and keep the link as a backup:
 
@@ -64,4 +71,4 @@ Replace the **Message body** of these three templates so they include the 6-digi
 <p>If you didn't ask for this, ignore this email.</p>
 ```
 
-**3. Authentication → Sign In / Providers → Email:** "Confirm email" on; email OTP length 6.
+**4. Authentication → Sign In / Providers → Email:** "Confirm email" on; email OTP length 6.
